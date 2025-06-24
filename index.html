@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <link
+        rel="icon"
+        href="https://raw.githubusercontent.com/JacobLinCool/leetcode-stats-card/main/favicon/leetcode.ico"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leetcode Thursdays</title>
+    <meta property="og:title" content="Leetcode Thursdays" />
+    <meta property="og:description" content="A friendly leaderboard for LeetCode enthusiasts.">
+    <meta property="og:image" content="og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="og-image.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --background-gradient-start: #f4f5f7;
+            --background-gradient-end: #e0e7ff;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --accent-primary: #4f46e5;
+            --accent-secondary: #7c3aed;
+            --card-background: rgba(255, 255, 255, 0.6);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --card-shadow: rgba(0, 0, 0, 0.05);
+        }
+        
+        body {
+            background-image: linear-gradient(to bottom right, var(--background-gradient-start), var(--background-gradient-end));
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+                Cantarell, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        p.subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+        }
+        
+        .stat-switcher {
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .stat-switcher button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background-color: var(--card-background);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stat-switcher button:hover {
+            background-color: white;
+            color: var(--accent-primary);
+        }
+
+        .stat-switcher button.active {
+            color: white;
+            background-image: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+        }
+
+        #leaderboard {
+            display: none;
+            background-color: var(--card-background);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--card-shadow);
+            border: 3px solid var(--accent-primary);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        #leaderboard table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        #leaderboard th, #leaderboard td {
+            padding: 1rem 1.5rem;
+            color: var(--text-primary);
+        }
+
+        #leaderboard th {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--card-border);
+        }
+
+        #leaderboard td {
+            font-size: 1.1rem;
+        }
+
+        #leaderboard tbody tr:not(:last-child) {
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        #leaderboard .rank {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--accent-primary);
+        }
+
+        #leaderboard th.easy, #leaderboard td.easy { color: #00b894; }
+        #leaderboard th.medium, #leaderboard td.medium { color: #fdcb6e; }
+        #leaderboard th.hard, #leaderboard td.hard { color: #d63031; }
+
+        .stats-card {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .stats-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+        }
+
+        #problem-breakdown {
+            display: none;
+            text-align: left;
+        }
+
+        .problem-card {
+            background-color: var(--card-background);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px var(--card-shadow);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 1.5rem;
+        }
+
+        .problem-card h3 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .problem-card a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .problem-card .user-submissions-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+        
+        .problem-card .user-submission {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+        }
+
+        .problem-card .user-submission:not(:last-child) {
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .problem-card .user-info {
+            font-weight: 600;
+        }
+
+        .problem-card .submission-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .problem-card .status-badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .problem-card .status-badge.accepted { background-color: #00b894; }
+        .problem-card .status-badge.wrong { background-color: #d63031; }
+        .problem-card .status-badge.other { background-color: #636e72; }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2.25rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-switcher {
+                flex-direction: column;
+            }
+            #leaderboard th, #leaderboard td {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LeetCode Stats Dashboard</h1>
+        <p class="subtitle">Select a view to see different stats for each user.</p>
+
+        <div class="stat-switcher">
+            <button data-stat="activity" class="active">Stats</button>
+            <button data-stat="contest">Leaderboard</button>
+        </div>
+        <div class="stats-grid" id="stats-grid">
+             <div class="stats-card">
+                 <img id="card-img-0" src="" alt="jormarcus LeetCode Stats">
+             </div>
+             <div class="stats-card">
+                 <img id="card-img-1" src="" alt="kbrien11 LeetCode Stats">
+             </div>
+             <div class="stats-card">
+                 <img id="card-img-2" src="" alt="rgnack LeetCode Stats">
+             </div>
+             <div class="stats-card">
+                 <img id="card-img-3" src="" alt="shugums LeetCode Stats">
+             </div>
+        </div>
+        <div id="leaderboard" style="display: none;">
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th class="rank">#</th>
+                        <th>User</th>
+                        <th class="easy">Easy</th>
+                        <th class="medium">Medium</th>
+                        <th class="hard">Hard</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script type="module">
+        const users = ['jormarcus', 'kbrien11', 'rgnack', 'shugums'];
+        const baseUrl = 'https://leetcard.jacoblin.cool/';
+        const apiBaseUrl = 'https://leetcode-stats-api.herokuapp.com/';
+        const theme = 'unicorn';
+
+        function updateCardImages(statType) {
+            users.forEach((user, index) => {
+                const imgElement = document.getElementById(`card-img-${index}`);
+                if (imgElement) {
+                    const url = `${baseUrl}${user}?theme=${theme}&ext=${statType}&radius=16&border=3&animation=false`;
+                    imgElement.src = url;
+                    imgElement.alt = `${user} LeetCode ${statType} stats`;
+                }
+            });
+        }
+
+        async function loadLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            leaderboardBody.innerHTML = '';
+            
+            try {
+                const userPromises = users.map(async (username) => {
+                    const res = await fetch(`${apiBaseUrl}${username}`);
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        data.usernameForDisplay = username;
+                    }
+                    return data;
+                });
+                const results = await Promise.all(userPromises);
+
+                results.sort((a, b) => b.totalSolved - a.totalSolved);
+                
+                results.forEach((user, index) => {
+                    if (user.status === 'success') {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                                <td class="rank">#${index + 1}</td>
+                                <td>${user.usernameForDisplay}</td>
+                                <td class="easy">${user.easySolved}</td>
+                                <td class="medium">${user.mediumSolved}</td>
+                                <td class="hard">${user.hardSolved}</td>
+                                <td>${user.totalSolved}</td>
+                            `;
+                        leaderboardBody.appendChild(row);
+                    }
+                });
+
+            } catch (error) {
+                leaderboardBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading leaderboard.</td></tr>';
+                console.error(error);
+            }
+        }
+
+        async function switchStat(statType, clickedButton) {
+            document.querySelectorAll('.stat-switcher button').forEach(button => {
+                button.classList.remove('active');
+            });
+            clickedButton.classList.add('active');
+            
+            const statsGrid = document.getElementById('stats-grid');
+            const leaderboard = document.getElementById('leaderboard');
+
+            if (statType === 'contest') {
+                statsGrid.style.display = 'none';
+                leaderboard.style.display = 'block';
+                await loadLeaderboard();
+            } else {
+                leaderboard.style.display = 'none';
+                statsGrid.style.display = 'grid';
+                updateCardImages(statType);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const switcherButtons = document.querySelectorAll('.stat-switcher button');
+            switcherButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    switchStat(button.dataset.stat, button);
+                });
+            });
+
+            // Initial load
+            switchStat('activity', document.querySelector('.stat-switcher button.active'));
+        });
+    </script>
+</body>
+</html> 
