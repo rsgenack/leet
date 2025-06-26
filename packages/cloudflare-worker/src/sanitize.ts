@@ -38,10 +38,8 @@ function handleCssRules(config: Record<string, string>): string[] {
         css.push(`#background{rx:${parseFloat(config.border_radius) ?? 1}px}`);
     }
 
-    // Handle show_rank (backward compatibility)
-    if (config.show_rank && booleanize(config.show_rank) === false) {
-        css.push(`#ranking{display:none}`);
-    }
+    // Always hide ranking
+    css.push(`#ranking{display:none}`);
 
     // Handle radius
     if (config.radius) {
