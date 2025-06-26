@@ -33,7 +33,7 @@ This dashboard is designed for groups of friends who want to compete or collabor
 
 ## Demo
 
-[Live Demo](https://leet.rsgenack.dev/) (if deployed)
+[Live Site: leet.rgnack.com](https://leet.rgnack.com)
 
 ## Getting Started
 
