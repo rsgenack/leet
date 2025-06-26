@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import NavTabs from "../components/NavTabs";
+import { useQuestionsData } from "../components/QuestionsDataProvider";
 
 const users = ["jormarcus", "kbrien11", "rgnack", "shugums"];
 
@@ -27,22 +28,7 @@ function getStats(questions) {
 }
 
 export default function LeaderboardPage() {
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetch("/api/questions")
-      .then((res) => res.json())
-      .then((data) => {
-        setQuestions(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("Error loading leaderboard.");
-        setLoading(false);
-      });
-  }, []);
+  const { data: questions, loading, error } = useQuestionsData();
 
   const stats = getStats(questions).sort((a, b) => b.total - a.total);
 

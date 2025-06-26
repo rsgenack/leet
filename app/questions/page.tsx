@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import NavTabs from "../components/NavTabs";
+import { useQuestionsData } from "../components/QuestionsDataProvider";
 
 const users = ["jormarcus", "kbrien11", "rgnack", "shugums"];
 
@@ -20,22 +21,7 @@ function getStatusBadge(status) {
 }
 
 export default function QuestionsPage() {
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetch("/api/questions")
-      .then((res) => res.json())
-      .then((data) => {
-        setQuestions(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("Error loading questions.");
-        setLoading(false);
-      });
-  }, []);
+  const { data: questions, loading, error } = useQuestionsData();
 
   const sortedQuestions = [...questions].sort(
     (a, b) => Number(a.frontendQuestionId) - Number(b.frontendQuestionId)
