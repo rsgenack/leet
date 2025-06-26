@@ -1,330 +1,86 @@
-# LeetCode Stats Card
+# LeetCode Stats Dashboard
 
-[![CodeFactor](https://www.codefactor.io/repository/github/jacoblincool/leetcode-stats-card/badge)](https://www.codefactor.io/repository/github/jacoblincool/leetcode-stats-card)
+A modern, visually rich dashboard for tracking a casual LeetCode contest between friends. Built with Next.js, React, and Tailwind CSS, this project makes it easy to compare progress, view stats, and see solved questions in a beautiful, mobile-friendly interface.
 
-Show your dynamically generated LeetCode stats on your GitHub profile or your website!
+## Purpose
 
-LeetCode and LeetCode CN are both supported.
+This dashboard is designed for groups of friends who want to compete or collaborate on LeetCode. It provides a central place to:
+- Track everyone's progress in real time
+- See who is leading the contest
+- Browse solved questions and compare solutions
+- Motivate each other with clear, visual stats
 
-[Playground: Try It Now](https://leetcard.jacoblin.cool/)
+## Main Screens & Features
 
-[![LeetCode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=unicorn&extension=activity)](https://leetcard.jacoblin.cool/JacobLinCool?theme=unicorn&extension=activity)
+- **Stats Page**
+  - View your up-to-date LeetCode stats, including problems solved, ranking, and contest history
+  - Stats are displayed using dynamic SVG cards with custom fonts for a fun, personalized look
 
-## Features
+- **Leaderboard**
+  - See a ranked list of all participants in your contest
+  - Compare total problems solved, contest scores, and more
+  - Fully responsive: shows a table on desktop and card layout on mobile
 
-- 📈 Clean and simple LeetCode stats, for both `us` and `cn` sites
-- 🎨 Multiple themes and 1,300+ fonts - [Theme](#theme-default-lightdark), [Font](#font-default-baloo_2)
-- 🪄 Fully customizable using CSS - [Custom Stylesheets](#sheets-default-)
-- ⚡️ Fast and global edge network - [Cloudflare Workers](https://workers.cloudflare.com/)
-- 🚫 No tracking, controllable cache - [Cache](#cache-default-60)
-- 🍀 Open source - [MIT License](./LICENSE)
-- ⚙️ Extended-cards: `activity`, `contest`, `heatmap`
+- **Questions**
+  - Browse all solved questions by all participants
+  - Color-coded by difficulty (Easy, Medium, Hard) and status (Solved, Attempted, etc.)
+  - Filter and search to quickly find specific problems
 
-It also has a [NPM package](https://www.npmjs.com/package/leetcode-card) and a [highly extensible system](./packages/core/src/index.ts), so you can easily customize it to your needs.
+- **Unified Modern UI**
+  - Gradient backgrounds, bold Bebas Neue font, and color-coded badges for readability
+  - Navigation tabs for quick switching between screens
+  - Mobile-first design: all features work great on phones and tablets
 
-Want to contribute? Feel free to open a pull request!
+## Demo
 
-## Self-hosting
+[Live Demo](https://leet.rsgenack.dev/) (if deployed)
 
-You can also self-host this service using the [`jacoblincool/leetcode-stats-card`](https://hub.docker.com/r/jacoblincool/leetcode-stats-card) Docker image.
+## Getting Started
 
-To build the image by yourself, use `pnpm build:image` script.
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/rsgenack/leet.git
+   cd leet
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+3. **Run locally:**
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   ```
+4. **Open in browser:**
+   Visit [http://localhost:3000](http://localhost:3000)
 
-See [docker-compose.yml](./docker-compose.yml) for an example.
+## Project Structure
 
-## Usage
+- `/app` — Next.js app directory (pages, API routes, components)
+- `/components` — Shared React UI components
+- `/public` — Static assets (images, favicon, etc.)
+- `/styles` — Global CSS (Tailwind)
+- `/api` — Legacy API scripts
+- `/submission-scripts` — Scripts for fetching and updating LeetCode data
 
-Simply copy the code below, paste it into your `README.md`, and change the path to your leetcode username (case-insensitive).
+## Credits & Attributions
 
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool)
-```
+This project would not be possible without the amazing work of the following open-source projects:
 
-Congratulation! You are now showing your LeetCode stats on your profile!
+- [JacobLinCool/LeetCode-Stats-Card](https://github.com/JacobLinCool/LeetCode-Stats-Card)
+  - Provides the dynamic SVG stats card service and much of the inspiration for the stats UI and API integration.
+- [KnlnKS/leetcode-stats](https://github.com/KnlnKS/leetcode-stats)
+  - Inspired the leaderboard and question stats display, and provided ideas for API structure and theming.
 
-Want a hyperlink? Try this:
+Please check out and support these original repositories!
 
-```md
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool)](https://leetcode.com/JacobLinCool)
-```
+## License
 
-### Endpoint
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
 
-The endpoint of this tool is:
+---
 
-<https://leetcard.jacoblin.cool/>
-
-> The legacy one: <https://leetcode.card.workers.dev/>
-
-### Options
-
-There are many options, you can configure them by passing a query string to the endpoint.
-
-#### `site` (default: `us`)
-
-Data source, can be `us` or `cn`.
-
-```md
-![](https://leetcard.jacoblin.cool/leetcode?site=cn)
-```
-
-[![](https://leetcard.jacoblin.cool/leetcode?site=cn)](https://leetcard.jacoblin.cool/leetcode?site=cn)
-
-#### `theme` (default: `light,dark`)
-
-Card theme, see [Theme](#themes) for more information.
-
-Use a comma to separate the light and dark theme.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?theme=unicorn)
-![](https://leetcard.jacoblin.cool/jacoblincool?theme=light,unicorn)
-```
-
-[![](https://leetcard.jacoblin.cool/jacoblincool?theme=unicorn)](https://leetcode.com/jacoblincool)
-
-#### `font` (default: `Baloo_2`)
-
-Card font, you can use almost all fonts on [Google Fonts](https://fonts.google.com/).
-
-It is case-insensitive, and you can use `font=dancing_script` or `font=Dancing%20Script` to get the same result.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?font=Dancing_Script)
-```
-
-[![](https://leetcard.jacoblin.cool/jacoblincool?font=Dancing_Script)](https://leetcard.jacoblin.cool/jacoblincool?font=Dancing_Script)
-
-#### `width` and `height` (default: `500` and `200`)
-
-Change the card size, it will not resize the content.
-
-But it will be helpful if you want to use custom css.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?width=500&height=500)
-```
-
-[![](https://leetcard.jacoblin.cool/jacoblincool?width=500&height=500)](https://leetcard.jacoblin.cool/jacoblincool?width=500&height=500)
-
-#### `border` and `radius` (default: `1` and `4`)
-
-Change the card border and radius.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?border=0&radius=20)
-```
-
-[![](https://leetcard.jacoblin.cool/jacoblincool?border=0&radius=20)](https://leetcard.jacoblin.cool/jacoblincool?border=0&radius=20)
-
-#### `animation` (default: `true`)
-
-Enable or disable the animation.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?animation=false)
-```
-
-[![](https://leetcard.jacoblin.cool/jacoblincool?animation=false)](https://leetcard.jacoblin.cool/jacoblincool?animation=false)
-
-#### `hide` (default: `""`)
-
-Hide elements on the card, it is a comma-separated list of element ids.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?hide=ranking,total-solved-text,easy-solved-count,medium-solved-count,hard-solved-count)
-```
-
-[![](https://leetcard.jacoblin.cool/jacoblincool?hide=ranking,total-solved-text,easy-solved-count,medium-solved-count,hard-solved-count)](https://leetcard.jacoblin.cool/jacoblincool?hide=ranking,total-solved-text,easy-solved-count,medium-solved-count,hard-solved-count)
-
-#### `ext` (default: `""`)
-
-Extension, it is a comma-separated list of extension names.
-
-NOTICE: You can only use one of extended-card extensions (`activity`, `contest`, `heatmap`) at a time now, maybe they can be used together in the future.
-
-> Animation, font, theme, and external stylesheet are all implemented by extensions and enabled by default.
-
-Want to contribute a `nyan-cat` extension? PR is welcome!
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?ext=activity)
-```
-
-[![](https://leetcard.jacoblin.cool/jacoblincool?ext=activity)](https://leetcard.jacoblin.cool/jacoblincool?ext=activity)
-
-```md
-![](https://leetcard.jacoblin.cool/lapor?ext=contest)
-```
-
-[![](https://leetcard.jacoblin.cool/lapor?ext=contest)](https://leetcard.jacoblin.cool/lapor?ext=contest)
-
-```md
-![](https://leetcard.jacoblin.cool/lapor?ext=heatmap)
-```
-
-[![](https://leetcard.jacoblin.cool/lapor?ext=heatmap)](https://leetcard.jacoblin.cool/lapor?ext=heatmap)
-
-#### `cache` (default: `60`)
-
-Cache time in seconds.
-
-Note: it will not be a good idea to set it to a long time because GitHub will fetch and cache the card.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?cache=0)
-```
-
-> You can make `DELETE` request to `/:site/:username` to delete the cache.
-
-#### `sheets` (default: `""`)
-
-External stylesheet, it is a comma-separated list of urls.
-
-You can upload your custom CSS to gist and use the url.
-
-```md
-![](https://leetcard.jacoblin.cool/jacoblincool?sheets=url1,url2)
-```
-
-They will be injected in the order you specified.
-
-#### Legacy Options
-
-Still work, but deprecated.
-
-| Key             | Description                  | Default Value |
-| --------------- | ---------------------------- | ------------- |
-| `border_radius` | Same as `radius`             | `4`           |
-| `show_rank`     | Display/Hide Rank: `Boolean` | `false`        |
-| `extension`     | Same as `ext`                | `""`          |
-
-### Themes
-
-Now we have 6 themes. If you have any great idea, please feel free to open a PR!
-
-#### Light
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=light)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=light)](https://leetcard.jacoblin.cool/JacobLinCool?theme=light)
-
-#### Dark
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=dark)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=dark)](https://leetcard.jacoblin.cool/JacobLinCool?theme=dark)
-
-#### Nord
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=nord)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=nord)](https://leetcard.jacoblin.cool/JacobLinCool?theme=nord)
-
-#### Forest
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=forest)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=forest)](https://leetcard.jacoblin.cool/JacobLinCool?theme=forest)
-
-#### WTF
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=wtf)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=wtf)](https://leetcard.jacoblin.cool/JacobLinCool?theme=wtf)
-
-#### Unicorn
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=unicorn)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=unicorn)](https://leetcard.jacoblin.cool/JacobLinCool?theme=unicorn)
-
-#### Transparent
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=transparent)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?theme=transparent)](https://leetcard.jacoblin.cool/JacobLinCool?theme=transparent)
-
-### Fonts
-
-You can now use almost all fonts on [Google Fonts](https://fonts.google.com/).
-
-Some examples:
-
-#### Milonga
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?font=milonga)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?font=milonga)](https://leetcard.jacoblin.cool/JacobLinCool?font=milonga)
-
-#### Patrick Hand
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?font=patrick_hand)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?font=patrick_hand)](https://leetcard.jacoblin.cool/JacobLinCool?font=patrick_hand)
-
-#### Ruthie
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?font=ruthie)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?font=ruthie)](https://leetcard.jacoblin.cool/JacobLinCool?font=ruthie)
-
-### Extensions
-
-Extension, it is a comma-separated list of extension names.
-
-NOTICE: You can only use one of extended-card extensions (`activity`, `contest`, `heatmap`) at a time now, maybe they can be used together in the future.
-
-> Animation, font, theme, and external stylesheet are all implemented by extensions and enabled by default.
-
-Want to contribute a `nyan-cat` extension? PR is welcome!
-
-#### `activity`
-
-Show your recent submissions.
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?ext=activity)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/JacobLinCool?ext=activity)](https://leetcard.jacoblin.cool/JacobLinCool?ext=activity)
-
-#### `contest`
-
-Show your contest rating history.
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/lapor?ext=contest)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/lapor?ext=contest)](https://leetcard.jacoblin.cool/lapor?ext=contest)
-
-#### `heatmap`
-
-Show heatmap in the past 52 weeks.
-
-```md
-![Leetcode Stats](https://leetcard.jacoblin.cool/lapor?ext=heatmap)
-```
-
-[![Leetcode Stats](https://leetcard.jacoblin.cool/lapor?ext=heatmap)](https://leetcard.jacoblin.cool/lapor?ext=heatmap)
+**Note:** This dashboard is a personal project and not affiliated with LeetCode. All trademarks and data belong to their respective owners.
