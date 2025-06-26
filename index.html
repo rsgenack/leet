@@ -242,8 +242,8 @@
 
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
             margin-top: 2rem;
         }
         .card {
@@ -255,8 +255,7 @@
             flex-direction: column;
             justify-content: space-between;
             max-width: 400px;
-            margin: 0 auto;
-            border: 2px dashed #e57373; /* debug border, remove after verification */
+            min-width: 280px;
         }
         .card:hover {
             transform: translateY(-4px);
