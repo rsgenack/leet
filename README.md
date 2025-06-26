@@ -196,7 +196,7 @@ Still work, but deprecated.
 | Key             | Description                  | Default Value |
 | --------------- | ---------------------------- | ------------- |
 | `border_radius` | Same as `radius`             | `4`           |
-| `show_rank`     | Display/Hide Rank: `Boolean` | `true`        |
+| `show_rank`     | Display/Hide Rank: `Boolean` | `false`        |
 | `extension`     | Same as `ext`                | `""`          |
 
 ### Themes

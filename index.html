@@ -239,6 +239,139 @@
                 font-size: 0.9rem;
             }
         }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 2rem;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #e4e4e4;
+            border-radius: 8px;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+        }
+        .card-content {
+            padding: 16px;
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 12px;
+        }
+        .results-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .results-list li {
+            padding: 4px 0;
+            font-size: 0.9rem;
+        }
+        .card-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 8px 16px 16px 16px;
+        }
+        .question-link {
+            font-size: 0.9rem;
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .question-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .card-title { font-size: 1rem; }
+            .card-subtitle { font-size: 0.8rem; }
+            .results-list li { font-size: 0.8rem; }
+            .question-link { font-size: 0.8rem; }
+        }
+        .question-gradient {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fae8ff 100%);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        #leaderboard, .unicorn-card {
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.1);
+            background: white;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        #leaderboard th, #leaderboard td {
+            font-weight: 700 !important;
+        }
+        .unicorn-gradient {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fae8ff 100%);
+        }
+        .questions-grid .unicorn-card {
+            width: auto !important;
+            max-width: none !important;
+            margin-bottom: 0 !important;
+            padding: 2rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .question-difficulty {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .user-submissions-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0 0;
+        }
+        .user-submission {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-weight: 700;
+        }
+        .card-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .question-link {
+            font-size: 1rem;
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .question-link:hover {
+            text-decoration: underline;
+        }
+        .leaderboard-border {
+            border: 3px solid var(--accent-primary) !important;
+        }
     </style>
 </head>
 <body>
@@ -249,6 +382,7 @@
         <div class="stat-switcher">
             <button data-stat="activity" class="active">Stats</button>
             <button data-stat="contest">Leaderboard</button>
+            <button data-stat="questions">Questions</button>
         </div>
         <div class="stats-grid" id="stats-grid">
              <div class="stats-card">
@@ -264,7 +398,7 @@
                  <img id="card-img-3" src="" alt="shugums LeetCode Stats">
              </div>
         </div>
-        <div id="leaderboard" style="display: none;">
+        <div id="leaderboard" class="unicorn-card unicorn-gradient leaderboard-border" style="display: none;">
             <table id="leaderboard-table">
                 <thead>
                     <tr>
@@ -280,6 +414,7 @@
                 </tbody>
             </table>
         </div>
+        <div id="questions-container" class="cards-grid"></div>
     </div>
     <script type="module">
         const users = ['jormarcus', 'kbrien11', 'rgnack', 'shugums'];
@@ -301,37 +436,42 @@
         async function loadLeaderboard() {
             const leaderboardBody = document.getElementById('leaderboard-body');
             leaderboardBody.innerHTML = '';
-            
             try {
-                const userPromises = users.map(async (username) => {
-                    const res = await fetch(`${apiBaseUrl}${username}`);
-                    const data = await res.json();
-                    if (data.status === 'success') {
-                        data.usernameForDisplay = username;
-                    }
-                    return data;
+                const res = await fetch('/api/questions');
+                const questions = await res.json();
+                // users is defined globally
+                const userStats = users.map(user => {
+                    let easy = 0, medium = 0, hard = 0;
+                    questions.forEach(q => {
+                        if (q[user] && q[user].toLowerCase() === 'accepted') {
+                            if (q.difficulty === 'Easy') easy++;
+                            else if (q.difficulty === 'Medium') medium++;
+                            else if (q.difficulty === 'Hard') hard++;
+                        }
+                    });
+                    return {
+                        user,
+                        easy,
+                        medium,
+                        hard,
+                        total: easy + medium + hard
+                    };
                 });
-                const results = await Promise.all(userPromises);
-
-                results.sort((a, b) => b.totalSolved - a.totalSolved);
-                
-                results.forEach((user, index) => {
-                    if (user.status === 'success') {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                                <td class="rank">#${index + 1}</td>
-                                <td>${user.usernameForDisplay}</td>
-                                <td class="easy">${user.easySolved}</td>
-                                <td class="medium">${user.mediumSolved}</td>
-                                <td class="hard">${user.hardSolved}</td>
-                                <td>${user.totalSolved}</td>
-                            `;
-                        leaderboardBody.appendChild(row);
-                    }
+                userStats.sort((a, b) => b.total - a.total);
+                userStats.forEach((stat, idx) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="rank">#${idx + 1}</td>
+                        <td>${stat.user}</td>
+                        <td class="easy">${stat.easy}</td>
+                        <td class="medium">${stat.medium}</td>
+                        <td class="hard">${stat.hard}</td>
+                        <td>${stat.total}</td>
+                    `;
+                    leaderboardBody.appendChild(row);
                 });
-
             } catch (error) {
-                leaderboardBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading leaderboard.</td></tr>';
+                leaderboardBody.innerHTML = '<tr><td colspan="6" style="text-align: center; font-weight:700;">Error loading leaderboard.</td></tr>';
                 console.error(error);
             }
         }
@@ -344,14 +484,22 @@
             
             const statsGrid = document.getElementById('stats-grid');
             const leaderboard = document.getElementById('leaderboard');
+            const questionsContainer = document.getElementById('questions-container');
 
             if (statType === 'contest') {
                 statsGrid.style.display = 'none';
                 leaderboard.style.display = 'block';
+                questionsContainer.style.display = 'none';
                 await loadLeaderboard();
+            } else if (statType === 'questions') {
+                statsGrid.style.display = 'none';
+                leaderboard.style.display = 'none';
+                questionsContainer.style.display = 'block';
+                await loadQuestions();
             } else {
                 leaderboard.style.display = 'none';
                 statsGrid.style.display = 'grid';
+                questionsContainer.style.display = 'none';
                 updateCardImages(statType);
             }
         }
@@ -367,6 +515,61 @@
             // Initial load
             switchStat('activity', document.querySelector('.stat-switcher button.active'));
         });
+
+        function getStatusBadge(status) {
+            if (!status) return '<span class="status-badge other">–</span>';
+            const s = status.toLowerCase();
+            if (s === 'accepted') return '<span class="status-badge accepted">Accepted</span>';
+            if (s === 'wrong answer') return '<span class="status-badge wrong">Wrong Answer</span>';
+            if (s === 'compile error') return '<span class="status-badge other">Compile Error</span>';
+            if (s === 'time limit exceeded') return '<span class="status-badge other">TLE</span>';
+            if (s === 'memory limit exceeded') return '<span class="status-badge other">MLE</span>';
+            if (s === 'runtime error') return '<span class="status-badge other">RE</span>';
+            if (s === 'presentation error') return '<span class="status-badge other">PE</span>';
+            if (s === 'output limit exceeded') return '<span class="status-badge other">OLE</span>';
+            if (s === 'system error') return '<span class="status-badge other">SE</span>';
+            return `<span class="status-badge other">${status}</span>`;
+        }
+
+        function loadQuestions() {
+            const questionsContainer = document.getElementById('questions-container');
+            questionsContainer.innerHTML = '<div class="loading">Loading questions...</div>';
+            fetch('/api/questions')
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(questions => {
+                    if (!Array.isArray(questions) || questions.length === 0) {
+                        questionsContainer.innerHTML = '<div class="empty">No questions found.</div>';
+                        return;
+                    }
+                    questionsContainer.innerHTML = '';
+                    questions.forEach(q => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                          <div class="card-content">
+                            <div class="card-title">${q.frontendQuestionId}<br>${q.title}</div>
+                            <div class="card-subtitle">${q.difficulty}</div>
+                            <ul class="results-list">
+                              ${['jormarcus','kbrien11','rgnack','shugums'].map(user => `
+                                <li><strong>${user}:</strong> ${q[user] ? q[user] : '–'}</li>
+                              `).join('')}
+                            </ul>
+                          </div>
+                          <div class="card-footer">
+                            <a class="question-link" href="https://leetcode.com/problems/${q.titleSlug}/" target="_blank">View</a>
+                          </div>
+                        `;
+                        questionsContainer.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    console.error('Error loading questions:', err);
+                    questionsContainer.innerHTML = '<div class="error">Error loading questions.</div>';
+                });
+        }
     </script>
 </body>
 </html> 
